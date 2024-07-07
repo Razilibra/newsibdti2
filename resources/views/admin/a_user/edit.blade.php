@@ -48,17 +48,17 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group has-icon-left">
-                                        <label for="peran">Peran</label>
+                                        <label for="role">Role</label>
                                         <div class="position-relative">
-                                            <select id="peran" name="peran"
-                                                class="form-control @error('peran') is-invalid @enderror">
-                                                <option value="admin" {{ old('peran',$user->peran) == 'admin' ? 'selected' : '' }}>Admin</option>
-                                                <option value="pimpinan" {{ old('peran',$user->peran) == 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
-                                                <option value="mahasiswa" {{ old('peran',$user->peran) == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
-                                                <option value="dosen" {{ old('peran',$user->peran) == 'dosen' ? 'selected' : '' }}>Dosen</option>
-                                                <option value="staff" {{ old('peran',$user->peran) == 'staff' ? 'selected' : '' }}>Staff</option>
+                                            <select id="role" name="role"
+                                                class="form-control @error('role') is-invalid @enderror">
+                                                <option value="admin" {{ old('role',$user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                                <option value="pimpinan" {{ old('role',$user->role) == 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
+                                                <option value="mahasiswa" {{ old('role',$user->role) == 'mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+                                                <option value="dosen" {{ old('role',$user->role) == 'dosen' ? 'selected' : '' }}>Dosen</option>
+                                                <option value="staff" {{ old('role',$user->role) == 'staff' ? 'selected' : '' }}>Staff</option>
                                             </select>
-                                            @error('peran')
+                                            @error('role')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
                                             <div class="form-control-icon">

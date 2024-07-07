@@ -1,7 +1,5 @@
-<?php
-
 namespace App\Http\Controllers\admin;
-
+<?php
 use App\Http\Controllers\Controller;
 use App\Models\Berita;
 use Illuminate\Http\Request;
@@ -17,7 +15,9 @@ class BeritaController extends Controller
      */
     public function index()
     {
-        return view('admin.a_berita.index', [
+        $title = "Barang Masuk";
+        $role = session('role');
+        return view('admin.a_berita.index', compact('role', 'title') + [
             'berita' => Berita::with('kategori_beritas')->latest()->get()
         ]);
     }
@@ -27,7 +27,9 @@ class BeritaController extends Controller
      */
     public function create()
     {
-        return view('admin.a_berita.create', [
+        $title = "Barang Masuk";
+        $role = session('role');
+        return view('admin.a_berita.create', compact('role', 'title') + [
             'kategori_berita' => KategoriBerita::get()
         ]);
     }
@@ -37,8 +39,9 @@ class BeritaController extends Controller
      */
     public function store(BeritaRequest $request)
     {
+        $title = "Barang Masuk";
         $data = $request->validated();
-
+        $role = session('role');
         $file = $request->file('gambar');
         $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
         $file->storeAs('public/image', $fileName);
@@ -47,9 +50,9 @@ class BeritaController extends Controller
 
         $beritas = Berita::create($data);
         if ($beritas) {
-            return to_route('berita.index')->with('success', 'Berhasil Menambah Data');
+            return redirect()->route('berita.index')->with('success', 'Berhasil Menambah Data')->with(compact('title'));
         } else {
-            return to_route('berita.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('berita.index')->with('failed', 'Gagal Menambah Data')->with(compact('title'));
         }
     }
 
@@ -58,8 +61,10 @@ class BeritaController extends Controller
      */
     public function show(string $id)
     {
+        $title = "Barang Masuk";
+        $role = session('role');
         $berita = Berita::findOrFail($id);
-        return view('admin.a_berita.detail', compact('berita'));
+        return view('admin.a_berita.detail', compact('berita', 'role', 'title'));
     }
 
     /**
@@ -67,7 +72,9 @@ class BeritaController extends Controller
      */
     public function edit(string $id)
     {
-        return view('admin.a_berita.edit', [
+        $title = "Barang Masuk";
+        $role = session('role');
+        return view('admin.a_berita.edit', compact('role', 'title') + [
             'berita' => Berita::find($id),
             'kategori_berita' => KategoriBerita::get()
         ]);
@@ -78,6 +85,7 @@ class BeritaController extends Controller
      */
     public function update(UpdateBeritaRequest $request, string $id)
     {
+        $title = "Barang Masuk";
         $data = $request->validated();
 
         if ($request->hasFile('gambar')) {
@@ -95,9 +103,9 @@ class BeritaController extends Controller
 
         $berita = Berita::find($id)->update($data);
         if ($berita) {
-            return to_route('berita.index')->with('success', 'Berhasil Mengubah Data');
+            return redirect()->route('berita.index')->with('success', 'Berhasil Mengubah Data')->with(compact('title'));
         } else {
-            return to_route('berita.index')->with('failed', 'Gagal Mengubah Data');
+            return redirect()->route('berita.index')->with('failed', 'Gagal Mengubah Data')->with(compact('title'));
         }
     }
 
@@ -106,14 +114,15 @@ class BeritaController extends Controller
      */
     public function destroy(string $id)
     {
+        $title = "Barang Masuk";
         $data = Berita::find($id);
         Storage::delete('public/image/' . $data->gambar);
         $data->delete();
 
         if ($id) {
-            return to_route('berita.index')->with('success', 'Berhasil Menghapus Data');
+            return redirect()->route('berita.index')->with('success', 'Berhasil Menghapus Data')->with(compact('title'));
         } else {
-            return to_route('berita.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('berita.index')->with('failed', 'Gagal Menghapus Data')->with(compact('title'));
         }
     }
 }

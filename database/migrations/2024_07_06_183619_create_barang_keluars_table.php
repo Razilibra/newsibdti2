@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('barang_keluars', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('users_id')->constrained('peminjamen');
+            $table->foreignId('users_id')->constrained('peminjaman');
             $table->date('tanggal_keluar');
             $table->timestamps();
         });

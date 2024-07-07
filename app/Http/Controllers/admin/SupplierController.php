@@ -13,7 +13,9 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        return view('admin.a_supplier.index', [
+        $role = session('role');
+        $title = "data supplier";
+        return view('admin.a_supplier.index', compact('role','title') + [
             'supplier' => Supplier::orderBy('id','asc')->get()
         ]);
     }
@@ -23,7 +25,9 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        return view('admin.a_supplier.create');
+        $role = session('role');
+        $title = "data supplier";
+        return view('admin.a_supplier.create', compact('role','title'));
     }
 
     /**
@@ -31,6 +35,7 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        $role = session('role');
         $data = $request->validate([
             'nama_supplier' => 'required|min:8',
             'telepon_supplier' => 'required|min:11'
@@ -38,9 +43,9 @@ class SupplierController extends Controller
 
         $supplier = Supplier::create($data);
         if ($supplier) {
-            return to_route('supplier.index')->with('success', 'Berhasil Menambah Data');
+            return redirect()->route('supplier.index')->with('success', 'Berhasil Menambah Data')->with(compact('role'));
         } else {
-            return to_route('supplier.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('supplier.index')->with('failed', 'Gagal Menambah Data')->with(compact('role'));
         }
     }
 
@@ -57,8 +62,10 @@ class SupplierController extends Controller
      */
     public function edit(string $id)
     {
+        $role = session('role');
         $supplier = Supplier::findOrFail($id);
-        return view('admin.a_supplier.edit',compact('supplier'));
+        $title = "data supplier";
+        return view('admin.a_supplier.edit', compact('supplier', 'role','title'));
     }
 
     /**
@@ -66,6 +73,7 @@ class SupplierController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role = session('role');
         $supplier = Supplier::findOrFail($id);
 
         $data = $request->validate([
@@ -75,9 +83,9 @@ class SupplierController extends Controller
 
         $supplier->update($data);
         if ($supplier) {
-            return to_route('supplier.index')->with('success', 'Berhasil Menyimpan Data');
+            return redirect()->route('supplier.index')->with('success', 'Berhasil Menyimpan Data')->with(compact('role'));
         } else {
-            return to_route('supplier.index')->with('failed', 'Gagal Menyimpan Data');
+            return redirect()->route('supplier.index')->with('failed', 'Gagal Menyimpan Data')->with(compact('role'));
         }
     }
 
@@ -88,9 +96,9 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::find($id)->delete();
         if ($supplier) {
-            return to_route('supplier.index')->with('success', 'Berhasil Menghapus Data');
+            return redirect()->route('supplier.index')->with('success', 'Berhasil Menghapus Data');
         } else {
-            return to_route('supplier.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('supplier.index')->with('failed', 'Gagal Menghapus Data');
         }
     }
 }

@@ -15,10 +15,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('admin.a_user.index', [
-            'user' => User::orderByRaw("
-                FIELD(peran, 'pimpinan','admin', 'staff', 'dosen', 'mahasiswa')
-            ")->get()
+        $role = session('role');
+        $title = "data user";
+        return view('admin.a_user.index', compact('role','title') + [
+            'user' => User::orderByRaw("FIELD(role, 'pimpinan','admin', 'staff', 'dosen', 'mahasiswa')")->get()
         ]);
     }
 
@@ -27,7 +27,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.a_user.create');
+        $role = session('role');
+        $title = "data user";
+        return view('admin.a_user.create', compact('role','title'));
     }
 
     /**
@@ -35,13 +37,14 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        $role = session('role');
         $data = $request->validated();
 
-        $data = User::create($data);
-        if ($data) {
-            return to_route('user.index')->with('success', 'Berhasil Menambah Data');
+        $user = User::create($data);
+        if ($user) {
+            return redirect()->route('user.index')->with('success', 'Berhasil Menambah Data')->with(compact('role'));
         } else {
-            return to_route('user.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('user.index')->with('failed', 'Gagal Menambah Data')->with(compact('role'));
         }
     }
 
@@ -58,11 +61,10 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        // return view('admin.a_user.edit', [
-        //     'user' => User::find($id)
-        // ]);
+        $role = session('role');
         $user = User::findOrFail($id);
-        return view('admin.a_user.edit', compact('user'));
+        $title = "data user";
+        return view('admin.a_user.edit', compact('user', 'role','title'));
     }
 
     /**
@@ -70,13 +72,14 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $id)
     {
+        $role = session('role');
         $data = $request->validated();
 
         $user = User::find($id)->update($data);
         if ($user) {
-            return to_route('user.index')->with('success', 'Berhasil Mengubah Data');
+            return redirect()->route('user.index')->with('success', 'Berhasil Mengubah Data')->with(compact('role'));
         } else {
-            return to_route('user.index')->with('failed', 'Gagal Mengubah Data');
+            return redirect()->route('user.index')->with('failed', 'Gagal Mengubah Data')->with(compact('role'));
         }
     }
 
@@ -85,13 +88,14 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = User::find($id);
-        $data->delete();
+        $role = session('role');
+        $user = User::find($id);
+        $user->delete();
 
-        if ($id) {
-            return to_route('user.index')->with('success', 'Berhasil Menghapus Data');
+        if ($user) {
+            return redirect()->route('user.index')->with('success', 'Berhasil Menghapus Data')->with(compact('role'));
         } else {
-            return to_route('user.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('user.index')->with('failed', 'Gagal Menghapus Data')->with(compact('role'));
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Barang;
@@ -16,9 +16,24 @@ class PeminjamanController extends Controller
      */
     public function index()
     {
-        return view('admin.a_peminjaman.index', [
-            'peminjaman' => Peminjaman::with('users','barangs','pegawais')->latest()->get()
-        ]);
+        $role = session('role');
+        $userId = auth()->id(); // Assuming you want to get the authenticated user's ID
+
+        // Initialize query with eager loading
+        $query = Peminjaman::with('users', 'barangs', 'pegawais')->latest();
+
+        // Apply additional conditions based on role
+        if ($role !== 'admin') {
+            $query->where('users_id', $userId); // Adjusted column name assuming it's 'users_id'
+        }
+
+        // Fetch peminjaman records
+        $peminjaman = $query->get();
+
+        // Set the title
+        $title = "data peminjaman";
+
+        return view('admin.a_peminjaman.index', compact('peminjaman', 'role', 'title'));
     }
 
     /**
@@ -26,11 +41,15 @@ class PeminjamanController extends Controller
      */
     public function create()
     {
-        return view('admin.a_peminjaman.create', [
-            'user' => User::get(),
-            'barang' => Barang::get(),
-            'pegawai' => Pegawai::get(),
-        ]);
+        $role = session('role');
+        $users = User::all();
+        $barangs = Barang::all();
+        $pegawais = Pegawai::all();
+
+        // Set the title
+        $title = "data peminjaman";
+
+        return view('admin.a_peminjaman.create', compact('users', 'barangs', 'pegawais', 'role', 'title'));
     }
 
     /**
@@ -47,40 +66,46 @@ class PeminjamanController extends Controller
             'lama_pinjam' => 'required'
         ]);
 
+        Peminjaman::create($data);
 
-        $peminjaman = Peminjaman::create($data);
-        if ($peminjaman) {
-            return to_route('peminjaman.index')->with('success', 'Berhasil Menambah Data');
-        } else {
-            return to_route('peminjaman.index')->with('failed', 'Gagal Menambah Data');
-        }
+        return redirect()->route('peminjaman.index')->with('success', 'Berhasil Menambah Data');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $role = session('role');
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        // Set the title
+        $title = "data peminjaman";
+
+        return view('admin.a_peminjaman.show', compact('peminjaman', 'role', 'title'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        return view('admin.a_peminjaman.edit', [
-            'peminjaman' => Peminjaman::find($id),
-            'user' => User::get(),
-            'barang' => Barang::get(),
-            'pegawai' => Pegawai::get()
-        ]);
+        $role = session('role');
+        $peminjaman = Peminjaman::findOrFail($id);
+        $users = User::all();
+        $barangs = Barang::all();
+        $pegawais = Pegawai::all();
+
+        // Set the title
+        $title = "data peminjaman";
+
+        return view('admin.a_peminjaman.edit', compact('peminjaman', 'users', 'barangs', 'pegawais', 'role', 'title'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
 
@@ -94,23 +119,17 @@ class PeminjamanController extends Controller
         ]);
 
         $peminjaman->update($data);
-        if ($peminjaman) {
-            return to_route('peminjaman.index')->with('success', 'Berhasil Menyimpan Data');
-        } else {
-            return to_route('peminjaman.index')->with('failed', 'Gagal Menyimpan Data');
-        }
+
+        return redirect()->route('peminjaman.index')->with('success', 'Berhasil Menyimpan Data');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $peminjaman = Peminjaman::find($id)->delete();
-        if ($peminjaman) {
-            return to_route('peminjaman.index')->with('success', 'Berhasil Menghapus Data');
-        } else {
-            return to_route('peminjaman.index')->with('failed', 'Gagal Menghapus Data');
-        }
+        Peminjaman::findOrFail($id)->delete();
+
+        return redirect()->route('peminjaman.index')->with('success', 'Berhasil Menghapus Data');
     }
 }

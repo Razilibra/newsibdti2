@@ -17,8 +17,10 @@ class MahasiswaController extends Controller
      */
     public function index()
     {
-        return view('admin.a_mahasiswa.index', [
-            'mahasiswa' => Mahasiswa::with('prodis','users')->latest()->get()
+        $role = session('role');
+        $title = "Mahasiswa";
+        return view('admin.a_mahasiswa.index', compact('role', 'title') + [
+            'mahasiswa' => Mahasiswa::with('prodis', 'users')->latest()->get()
         ]);
     }
 
@@ -27,9 +29,11 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        return view('admin.a_mahasiswa.create', [
-            'prodis' =>Prodi::get(),
-            'users' =>User::get()
+        $role = session('role');
+        $title = "Mahasiswa";
+        return view('admin.a_mahasiswa.create', compact('role', 'title') + [
+            'prodis' => Prodi::get(),
+            'users' => User::get()
         ]);
     }
 
@@ -39,12 +43,12 @@ class MahasiswaController extends Controller
     public function store(MahasiswaRequest $request)
     {
         $data = $request->validated();
-
+        $role = session('role');
         $mahasiswa = Mahasiswa::create($data);
         if ($mahasiswa) {
-            return to_route('mahasiswa.index')->with('success', 'Berhasil Menambah Data');
+            return redirect()->route('mahasiswa.index')->with('success', 'Berhasil Menambah Data');
         } else {
-            return to_route('mahasiswa.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('mahasiswa.index')->with('failed', 'Gagal Menambah Data');
         }
     }
 
@@ -53,8 +57,10 @@ class MahasiswaController extends Controller
      */
     public function show(string $id)
     {
+        $role = session('role');
+        $title = "Mahasiswa";
         $mahasiswa = Mahasiswa::findOrFail($id);
-        return view('admin.a_mahasiswa.detail', compact('mahasiswa'));
+        return view('admin.a_mahasiswa.detail', compact('mahasiswa', 'role', 'title'));
     }
 
     /**
@@ -62,7 +68,9 @@ class MahasiswaController extends Controller
      */
     public function edit(string $id)
     {
-        return view('admin.a_mahasiswa.edit', [
+        $role = session('role');
+        $title = "Mahasiswa";
+        return view('admin.a_mahasiswa.edit', compact('role', 'title') + [
             'mahasiswa' => Mahasiswa::find($id),
             'prodis' => Prodi::get(),
             'users' => User::get(),
@@ -75,12 +83,12 @@ class MahasiswaController extends Controller
     public function update(UpdateMahasiswaRequest $request, string $id)
     {
         $data = $request->validated();
-
+        $role = session('role');
         $mahasiswa = Mahasiswa::find($id)->update($data);
         if ($mahasiswa) {
-            return to_route('mahasiswa.index')->with('success', 'Berhasil Mengubah Data');
+            return redirect()->route('mahasiswa.index')->with('success', 'Berhasil Mengubah Data');
         } else {
-            return to_route('mahasiswa.index')->with('failed', 'Gagal Mengubah Data');
+            return redirect()->route('mahasiswa.index')->with('failed', 'Gagal Mengubah Data');
         }
     }
 
@@ -89,14 +97,14 @@ class MahasiswaController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = Mahasiswa::find($id);
+        $mahasiswa = Mahasiswa::find($id);
+        $role = session('role');
+        $mahasiswa->delete();
 
-        $data->delete();
-
-        if ($id) {
-            return to_route('mahasiswa.index')->with('success', 'Berhasil Menghapus Data');
+        if ($mahasiswa) {
+            return redirect()->route('mahasiswa.index')->with('success', 'Berhasil Menghapus Data');
         } else {
-            return to_route('mahasiswa.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('mahasiswa.index')->with('failed', 'Gagal Menghapus Data');
         }
     }
 }

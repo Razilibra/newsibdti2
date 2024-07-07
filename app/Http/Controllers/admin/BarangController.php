@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
@@ -17,8 +16,12 @@ class BarangController extends Controller
      */
     public function index()
     {
+        $title = "Barang ";
+        $role = session('role');
         return view('admin.a_barang.index', [
-            'barang' => Barang::with('ruangans')->latest()->get()
+            'barang' => Barang::with('ruangans')->latest()->get(),
+            'role' => $role,
+            'title' => $title
         ]);
     }
 
@@ -27,8 +30,12 @@ class BarangController extends Controller
      */
     public function create()
     {
+        $title = "Barang ";
+        $role = session('role');
         return view('admin.a_barang.create', [
-            'ruangan' => Ruangan::get()
+            'ruangan' => Ruangan::get(),
+            'role' => $role,
+            'title' => $title
         ]);
     }
 
@@ -37,6 +44,8 @@ class BarangController extends Controller
      */
     public function store(BarangRequest $request)
     {
+        $title = "Barang ";
+        $role = session('role');
         $data = $request->validated();
 
         $file = $request->file('foto');
@@ -47,9 +56,9 @@ class BarangController extends Controller
 
         $barangs = Barang::create($data);
         if ($barangs) {
-            return to_route('barang.index')->with('success', 'Berhasil Menambah Data');
+            return to_route('barang.index')->with('success', 'Berhasil Menambah Data')->with(compact('role', 'title'));
         } else {
-            return to_route('barang.index')->with('failed', 'Gagal Menambah Data');
+            return to_route('barang.index')->with('failed', 'Gagal Menambah Data')->with(compact('role', 'title'));
         }
     }
 
@@ -58,8 +67,10 @@ class BarangController extends Controller
      */
     public function show(string $id)
     {
+        $title = "Barang ";
+        $role = session('role');
         $barang = Barang::findOrFail($id);
-        return view('admin.a_barang.detail', compact('barang'));
+        return view('admin.a_barang.detail', compact('barang', 'role', 'title'));
     }
 
     /**
@@ -67,9 +78,13 @@ class BarangController extends Controller
      */
     public function edit(string $id)
     {
+        $title = "Barang ";
+        $role = session('role');
         return view('admin.a_barang.edit', [
             'barang' => Barang::find($id),
-            'ruangan' => Ruangan::get()
+            'ruangan' => Ruangan::get(),
+            'role' => $role,
+            'title' => $title
         ]);
     }
 
@@ -78,6 +93,8 @@ class BarangController extends Controller
      */
     public function update(UpdateBarangRequest $request, string $id)
     {
+        $title = "Barang ";
+        $role = session('role');
         $data = $request->validated();
 
         if ($request->hasFile('foto')) {
@@ -95,9 +112,9 @@ class BarangController extends Controller
 
         $barang = Barang::find($id)->update($data);
         if ($barang) {
-            return to_route('barang.index')->with('success', 'Berhasil Mengubah Data');
+            return to_route('barang.index')->with('success', 'Berhasil Mengubah Data')->with(compact('role', 'title'));
         } else {
-            return to_route('barang.index')->with('failed', 'Gagal Mengubah Data');
+            return to_route('barang.index')->with('failed', 'Gagal Mengubah Data')->with(compact('role', 'title'));
         }
     }
 
@@ -106,14 +123,16 @@ class BarangController extends Controller
      */
     public function destroy(string $id)
     {
+        $title = "Barang ";
+        $role = session('role');
         $data = Barang::find($id);
         Storage::delete('public/image/' . $data->foto);
         $data->delete();
 
-        if ($id) {
-            return to_route('barang.index')->with('success', 'Berhasil Menghapus Data');
+        if ($data) {
+            return to_route('barang.index')->with('success', 'Berhasil Menghapus Data')->with(compact('role', 'title'));
         } else {
-            return to_route('barang.index')->with('failed', 'Gagal Menghapus Data');
+            return to_route('barang.index')->with('failed', 'Gagal Menghapus Data')->with(compact('role', 'title'));
         }
     }
 }

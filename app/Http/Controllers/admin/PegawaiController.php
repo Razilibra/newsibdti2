@@ -17,7 +17,10 @@ class PegawaiController extends Controller
      */
     public function index()
     {
-        return view('admin.a_pegawai.index', [
+        $role = session('role');
+        $title = "data pegawai"; // Setting the title variable
+
+        return view('admin.a_pegawai.index', compact('role', 'title') + [
             'pegawai' => Pegawai::with('users')->latest()->get()
         ]);
     }
@@ -27,7 +30,8 @@ class PegawaiController extends Controller
      */
     public function create()
     {
-        return view('admin.a_pegawai.create', [
+        $role = session('role');
+        return view('admin.a_pegawai.create', compact('role') + [
             'users' => User::get()
         ]);
     }
@@ -38,18 +42,18 @@ class PegawaiController extends Controller
     public function store(PegawaiRequest $request)
     {
         $data = $request->validated();
-
+        $role = session('role');
         $file = $request->file('foto');
         $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
         $file->storeAs('public/image', $fileName);
 
         $data['foto'] = $fileName;
 
-        $pegawais = Pegawai::create($data);
-        if ($pegawais) {
-            return to_route('pegawai.index')->with('success', 'Berhasil Menambah Data');
+        $pegawai = Pegawai::create($data);
+        if ($pegawai) {
+            return redirect()->route('pegawai.index')->with('success', 'Berhasil Menambah Data');
         } else {
-            return to_route('pegawai.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('pegawai.index')->with('failed', 'Gagal Menambah Data');
         }
     }
 
@@ -58,8 +62,9 @@ class PegawaiController extends Controller
      */
     public function show(string $id)
     {
+        $role = session('role');
         $pegawai = Pegawai::findOrFail($id);
-        return view('admin.a_pegawai.detail', compact('pegawai'));
+        return view('admin.a_pegawai.detail', compact('pegawai', 'role'));
     }
 
     /**
@@ -67,7 +72,8 @@ class PegawaiController extends Controller
      */
     public function edit(string $id)
     {
-        return view('admin.a_pegawai.edit', [
+        $role = session('role');
+        return view('admin.a_pegawai.edit', compact('role') + [
             'pegawai' => Pegawai::find($id),
             'users' => User::get()
         ]);
@@ -93,11 +99,11 @@ class PegawaiController extends Controller
             $data['foto'] = $request->oldImg;
         }
 
-        $berita = Pegawai::find($id)->update($data);
-        if ($berita) {
-            return to_route('pegawai.index')->with('success', 'Berhasil Mengubah Data');
+        $pegawai = Pegawai::find($id)->update($data);
+        if ($pegawai) {
+            return redirect()->route('pegawai.index')->with('success', 'Berhasil Mengubah Data');
         } else {
-            return to_route('pegawai.index')->with('failed', 'Gagal Mengubah Data');
+            return redirect()->route('pegawai.index')->with('failed', 'Gagal Mengubah Data');
         }
     }
 
@@ -106,14 +112,14 @@ class PegawaiController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = Pegawai::find($id);
-        Storage::delete('public/image/' . $data->foto);
-        $data->delete();
+        $pegawai = Pegawai::find($id);
+        Storage::delete('public/image/' . $pegawai->foto);
+        $pegawai->delete();
 
-        if ($id) {
-            return to_route('pegawai.index')->with('success', 'Berhasil Menghapus Data');
+        if ($pegawai) {
+            return redirect()->route('pegawai.index')->with('success', 'Berhasil Menghapus Data');
         } else {
-            return to_route('pegawai.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('pegawai.index')->with('failed', 'Gagal Menghapus Data');
         }
     }
 }

@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     public function index(){
-        return view('admin.a_dashboard.dashboard');
+        $role = session('role');
+        $title = "dashboard ".$role;
+        
+        return view('admin.a_dashboard.dashboard', compact('role', 'title'));
     }
 }

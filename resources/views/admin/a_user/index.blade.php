@@ -29,7 +29,7 @@
                                     <th>No</th>
                                     <th>Nama</th>
                                     <th>Email</th>
-                                    <th>Peran</th>
+                                    <th>Role</th>
                                     <th>Fungsi</th>
                                 </tr>
                             </thead>
@@ -39,7 +39,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->name }}</td>
                                         <td>{{ $item->email }}</td>
-                                        <td>{{ $item->peran }}</td>
+                                        <td>{{ $item->role }}</td>
                                         <td>
                                             <div class="d-flex justify-content-center">
                                                 <a class="btn btn-primary btn-sm me-2" href="{{ route('user.edit', $item->id) }}">

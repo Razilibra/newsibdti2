@@ -14,15 +14,15 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-group has-icon-left">
-                                        <label for="peminjamen_id">Nama User</label>
+                                        <label for="peminjaman_id">Nama User</label>
                                         <div class="position-relative">
-                                            <select id="peminjamen_id" name="peminjamen_id" class="form-control @error('peminjamen_id') is-invalid @enderror">
+                                            <select id="peminjaman_id" name="peminjaman_id" class="form-control @error('peminjaman_id') is-invalid @enderror">
                                                 <option value="" hidden>--Pilih User--</option>
                                                 @foreach ($peminjaman as $item)
-                                                    <option value="{{ $item->id }}" {{ old('peminjamen_id') == $item->id ? 'selected' : '' }}>{{ $item->users->name }}</option>
+                                                    <option value="{{ $item->id }}" {{ old('peminjaman_id') == $item->id ? 'selected' : '' }}>{{ $item->users->name }}</option>
                                                 @endforeach
                                             </select>
-                                            @error('peminjamen_id')
+                                            @error('peminjaman_id')
                                                 <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
                                             <div class="form-control-icon">

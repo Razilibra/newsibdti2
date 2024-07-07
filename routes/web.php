@@ -1,21 +1,25 @@
 <?php
 
-use App\Http\Controllers\admin\BarangController;
-use App\Http\Controllers\admin\BarangKeluarController;
-use App\Http\Controllers\admin\BarangMasukController;
-use App\Http\Controllers\admin\BeritaController;
-use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\KategoriBerita;
-use App\Http\Controllers\admin\KategoriBeritaController;
-use App\Http\Controllers\admin\MahasiswaController;
-use App\Http\Controllers\admin\PegawaiController;
-use App\Http\Controllers\admin\PeminjamanController;
-use App\Http\Controllers\admin\PengembalianController;
-use App\Http\Controllers\admin\ProdiController;
-use App\Http\Controllers\admin\RuanganController;
-use App\Http\Controllers\admin\SupplierController;
-use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\LogController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\KategoriBerita;
+use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\admin\ProdiController;
+use App\Http\Controllers\admin\BarangController;
+use App\Http\Controllers\admin\BeritaController;
+use App\Http\Controllers\admin\PegawaiController;
+use App\Http\Controllers\admin\RuanganController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\admin\SupplierController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\MahasiswaController;
+use App\Http\Controllers\admin\PeminjamanController;
+use App\Http\Controllers\admin\BarangMasukController;
+use App\Http\Controllers\admin\BarangKeluarController;
+use App\Http\Controllers\admin\PengembalianController;
+use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\admin\KategoriBeritaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,10 +32,55 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
+
+//Login
+
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', 'App\Http\Controllers\Auth\LoginController@login')->name('login.store');
+Route::get('/logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('logout');
+Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+
+// Rute untuk menyimpan data registrasi
+Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+
+//forget password
+Route::get('/auth-forgot-password.html', function () {
+    return view('auth.forgot-password');
+})->name('forgot-password');
+// Rute untuk menampilkan form pengaturan ulang kata sandi
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('password.request');
+
+// Rute untuk mengirim email pengaturan ulang kata sandi
+Route::post('/forgot-password', [
+    'uses' => 'Auth\ForgotPasswordController@sendResetLinkEmail',
+    'as' => 'password.email'
+]);
+
+// Rute untuk menampilkan form reset kata sandi
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->name('password.reset');
+
+// Rute untuk menyimpan kata sandi yang direset
+Route::post('/reset-password', [
+    'uses' => 'Auth\ResetPasswordController@reset',
+    'as' => 'password.update'
+]);
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+
+
+
+Route::get('/', function () {
+    return view('frontend.index');
+});
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
@@ -142,3 +191,5 @@ Route::put('/mahasiswa/{id}/update', [MahasiswaController::class, 'update'])->na
 Route::delete('/mahasiswa/{id}/destroy',[MahasiswaController::class, 'destroy'])->name('mahasiswa.destroy');
 
 // Log Aktivitas
+
+Route::resource('/logs', LogController::class);

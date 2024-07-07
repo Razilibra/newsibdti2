@@ -36,7 +36,7 @@
                                 @foreach ($barangkeluar as $item)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $item->peminjamen->users->name }}</td>
+                                        <td>{{ $item->peminjaman->users->name }}</td>
                                         <td>{{ $item->tanggal_keluar }}</td>
                                         <td>
                                             <div class="d-flex justify-content-center">

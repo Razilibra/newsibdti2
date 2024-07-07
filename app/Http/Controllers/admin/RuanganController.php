@@ -13,7 +13,9 @@ class RuanganController extends Controller
      */
     public function index()
     {
-        return view('admin.a_ruangan.index', [
+        $role = session('role');
+        $title = "data ruangan";
+        return view('admin.a_ruangan.index', compact('role','title') + [
             'ruangan' => Ruangan::orderBy('id','asc')->get()
         ]);
     }
@@ -23,7 +25,9 @@ class RuanganController extends Controller
      */
     public function create()
     {
-        return view('admin.a_ruangan.create');
+        $title = "data ruangan";
+        $role = session('role');
+        return view('admin.a_ruangan.create', compact('role','title'));
     }
 
     /**
@@ -31,17 +35,17 @@ class RuanganController extends Controller
      */
     public function store(Request $request)
     {
+        $role = session('role');
         $data = $request->validate([
             'nama_ruangan' => 'required|min:3',
             'gedung' => 'required|min:1'
         ]);
-
-
+    
         $ruangan = Ruangan::create($data);
         if ($ruangan) {
-            return to_route('ruangan.index')->with('success', 'Berhasil Menambah Data');
+            return redirect()->route('ruangan.index')->with('success', 'Berhasil Menambah Data')->with(compact('role'));
         } else {
-            return to_route('ruangan.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('ruangan.index')->with('failed', 'Gagal Menambah Data')->with(compact('role'));
         }
     }
 
@@ -58,8 +62,10 @@ class RuanganController extends Controller
      */
     public function edit(string $id)
     {
+        $role = session('role');
         $ruangan = Ruangan::findOrFail($id);
-        return view('admin.a_ruangan.edit',compact('ruangan'));
+        $title = "data ruangan";
+        return view('admin.a_ruangan.edit', compact('ruangan', 'role','ruangan'));
     }
 
     /**
@@ -67,6 +73,7 @@ class RuanganController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role = session('role');
         $ruangan = Ruangan::findOrFail($id);
 
         $data = $request->validate([
@@ -76,9 +83,9 @@ class RuanganController extends Controller
 
         $ruangan->update($data);
         if ($ruangan) {
-            return to_route('ruangan.index')->with('success', 'Berhasil Menyimpan Data');
+            return redirect()->route('ruangan.index')->with('success', 'Berhasil Menyimpan Data')->with(compact('role'));
         } else {
-            return to_route('ruangan.index')->with('failed', 'Gagal Menyimpan Data');
+            return redirect()->route('ruangan.index')->with('failed', 'Gagal Menyimpan Data')->with(compact('role'));
         }
     }
 
@@ -89,9 +96,9 @@ class RuanganController extends Controller
     {
         $ruangan = Ruangan::find($id)->delete();
         if ($ruangan) {
-            return to_route('ruangan.index')->with('success', 'Berhasil Menghapus Data');
+            return redirect()->route('ruangan.index')->with('success', 'Berhasil Menghapus Data');
         } else {
-            return to_route('ruangan.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('ruangan.index')->with('failed', 'Gagal Menghapus Data');
         }
     }
 }

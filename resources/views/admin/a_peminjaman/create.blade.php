@@ -18,7 +18,7 @@
                                         <div class="position-relative">
                                             <select id="users_id" name="users_id" class="form-control @error('users_id') is-invalid @enderror">
                                                 <option value="" hidden>--Pilih Akun Anda--</option>
-                                                @foreach ($user as $item)
+                                                @foreach ($users as $item)
                                                     <option value="{{ $item->id }}" {{ old('users_id') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
                                                 @endforeach
                                             </select>
@@ -37,7 +37,7 @@
                                         <div class="position-relative">
                                             <select id="barangs_id" name="barangs_id" class="form-control @error('barangs_id') is-invalid @enderror">
                                                 <option value="" hidden>--Pilih Barang--</option>
-                                                @foreach ($barang as $item)
+                                                @foreach ($barangs as $item)
                                                     <option value="{{ $item->id }}" {{ old('barangs_id') == $item->id ? 'selected' : '' }}>{{ $item->nama_barang }}</option>
                                                 @endforeach
                                             </select>
@@ -98,7 +98,7 @@
                                         <div class="position-relative">
                                             <select id="pegawais_id" name="pegawais_id" class="form-control @error('pegawais_id') is-invalid @enderror">
                                                 <option value="" hidden>--Pilih Penanggung Jawab--</option>
-                                                @foreach ($pegawai as $item)
+                                                @foreach ($pegawais as $item)
                                                     <option value="{{ $item->id }}" {{ old('pegawais_id') == $item->id ? 'selected' : '' }}>{{ $item->nama }}</option>
                                                 @endforeach
                                             </select>

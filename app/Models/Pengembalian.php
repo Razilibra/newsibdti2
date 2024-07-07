@@ -10,7 +10,7 @@ class Pengembalian extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['peminjamen_id', 'pegawais_id', 'tanggal_kembali'];
+    protected $fillable = ['peminjaman_id', 'pegawais_id', 'tanggal_kembali'];
 
     public function users(): BelongsTo
     {
@@ -22,8 +22,8 @@ class Pengembalian extends Model
         return $this->belongsTo(Pegawai::class, 'pegawais_id', 'id');
     }
 
-    public function peminjamen(): BelongsTo
+    public function peminjaman(): BelongsTo
     {
-        return $this->belongsTo(Peminjaman::class, 'peminjamen_id', 'id');
+        return $this->belongsTo(Peminjaman::class, 'peminjaman_id', 'id');
     }
 }

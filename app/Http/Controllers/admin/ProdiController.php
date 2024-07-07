@@ -13,7 +13,9 @@ class ProdiController extends Controller
      */
     public function index()
     {
-        return view('admin.a_prodi.index', [
+        $role = session('role');
+        $title = "data prodi";
+        return view('admin.a_prodi.index', compact('role','title') + [
             'prodi' => Prodi::orderBy('id','asc')->get()
         ]);
     }
@@ -23,7 +25,9 @@ class ProdiController extends Controller
      */
     public function create()
     {
-        return view('admin.a_prodi.create');
+        $role = session('role');
+        $title = "data prodi";
+        return view('admin.a_prodi.create', compact('role','title'));
     }
 
     /**
@@ -31,6 +35,7 @@ class ProdiController extends Controller
      */
     public function store(Request $request)
     {
+        $role = session('role');
         $data = $request->validate([
             'prodi' => 'required|min:8',
             'kaprodi' => 'required|min:8'
@@ -38,9 +43,9 @@ class ProdiController extends Controller
 
         $prodi = Prodi::create($data);
         if ($prodi) {
-            return to_route('prodi.index')->with('success', 'Berhasil Menambah Data');
+            return redirect()->route('prodi.index')->with('success', 'Berhasil Menambah Data')->with(compact('role'));
         } else {
-            return to_route('prodi.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('prodi.index')->with('failed', 'Gagal Menambah Data')->with(compact('role'));
         }
     }
 
@@ -57,8 +62,10 @@ class ProdiController extends Controller
      */
     public function edit(string $id)
     {
+        $role = session('role');
+        $title = "data prodi";
         $prodi = Prodi::findOrFail($id);
-        return view('admin.a_prodi.edit',compact('prodi'));
+        return view('admin.a_prodi.edit', compact('prodi', 'role','title'));
     }
 
     /**
@@ -66,6 +73,7 @@ class ProdiController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role = session('role');
         $prodi = Prodi::findOrFail($id);
 
         $data = $request->validate([
@@ -75,9 +83,9 @@ class ProdiController extends Controller
 
         $prodi->update($data);
         if ($prodi) {
-            return to_route('prodi.index')->with('success', 'Berhasil Menyimpan Data');
+            return redirect()->route('prodi.index')->with('success', 'Berhasil Menyimpan Data')->with(compact('role'));
         } else {
-            return to_route('prodi.index')->with('failed', 'Gagal Menyimpan Data');
+            return redirect()->route('prodi.index')->with('failed', 'Gagal Menyimpan Data')->with(compact('role'));
         }
     }
 
@@ -88,9 +96,9 @@ class ProdiController extends Controller
     {
         $prodi = Prodi::find($id)->delete();
         if ($prodi) {
-            return to_route('prodi.index')->with('success', 'Berhasil Menghapus Data');
+            return redirect()->route('prodi.index')->with('success', 'Berhasil Menghapus Data');
         } else {
-            return to_route('prodi.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('prodi.index')->with('failed', 'Gagal Menghapus Data');
         }
     }
 }

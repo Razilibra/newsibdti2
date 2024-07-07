@@ -14,8 +14,10 @@ class KategoriBeritaController extends Controller
      */
     public function index()
     {
-        return view('admin.a_kategori_berita.index', [
-            'kategori' => KategoriBerita::orderBy('id','asc')->get()
+        $role = session('role');
+        $title = "Daftar kategori berita";
+        return view('admin.a_kategori_berita.index', compact('role', 'title') + [
+            'kategori' => KategoriBerita::orderBy('id', 'asc')->get()
         ]);
     }
 
@@ -24,7 +26,9 @@ class KategoriBeritaController extends Controller
      */
     public function create()
     {
-        return view('admin.a_kategori_berita.create');
+        $role = session('role');
+        $title = "Daftar kategori berita";
+        return view('admin.a_kategori_berita.create', compact('role', 'title'));
     }
 
     /**
@@ -37,12 +41,13 @@ class KategoriBeritaController extends Controller
         ]);
 
         $data['slug'] = Str::slug($data['nama']);
+        $title = "Daftar kategori berita";
 
         $kategori = KategoriBerita::create($data);
         if ($kategori) {
-            return to_route('kategoriberita.index')->with('success', 'Berhasil Menambah Data');
+            return redirect()->route('kategoriberita.index')->with('success', 'Berhasil Menambah Data');
         } else {
-            return to_route('kategoriberita.index')->with('failed', 'Gagal Menambah Data');
+            return redirect()->route('kategoriberita.index')->with('failed', 'Gagal Menambah Data');
         }
     }
 
@@ -51,7 +56,7 @@ class KategoriBeritaController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Implementasi belum ditambahkan
     }
 
     /**
@@ -59,8 +64,10 @@ class KategoriBeritaController extends Controller
      */
     public function edit(string $id)
     {
+        $role = session('role');
+        $title = "Daftar kategori berita";
         $kategori = KategoriBerita::findOrFail($id);
-        return view('admin.a_kategori_berita.update',compact('kategori'));
+        return view('admin.a_kategori_berita.update', compact('kategori', 'role', 'title'));
     }
 
     /**
@@ -69,7 +76,8 @@ class KategoriBeritaController extends Controller
     public function update(Request $request, string $id)
     {
         $kategori = KategoriBerita::findOrFail($id);
-
+        $role = session('role');
+        $title = "Daftar kategori berita";
         $data = $request->validate([
             'nama' => 'required|min:5'
         ]);
@@ -78,9 +86,9 @@ class KategoriBeritaController extends Controller
 
         $kategori->update($data);
         if ($kategori) {
-            return to_route('kategoriberita.index')->with('success', 'Berhasil Menyimpan Data');
+            return redirect()->route('kategoriberita.index')->with('success', 'Berhasil Menyimpan Data');
         } else {
-            return to_route('kategoriberita.index')->with('failed', 'Gagal Menyimpan Data');
+            return redirect()->route('kategoriberita.index')->with('failed', 'Gagal Menyimpan Data');
         }
     }
 
@@ -91,9 +99,9 @@ class KategoriBeritaController extends Controller
     {
         $kategori = KategoriBerita::find($id)->delete();
         if ($kategori) {
-            return to_route('kategoriberita.index')->with('success', 'Berhasil Menghapus Data');
+            return redirect()->route('kategoriberita.index')->with('success', 'Berhasil Menghapus Data');
         } else {
-            return to_route('kategoriberita.index')->with('failed', 'Gagal Menghapus Data');
+            return redirect()->route('kategoriberita.index')->with('failed', 'Gagal Menghapus Data');
         }
     }
 }

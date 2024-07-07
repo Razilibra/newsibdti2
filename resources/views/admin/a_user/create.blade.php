@@ -42,16 +42,16 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group has-icon-left">
-                                        <label for="peran">Peran</label>
+                                        <label for="role">Role</label>
                                         <div class="position-relative">
-                                            <select id="peran" name="peran"
-                                                class="form-control @error('peran') is-invalid @enderror">
+                                            <select id="role" name="role"
+                                                class="form-control @error('role') is-invalid @enderror">
                                                 <option value="">Pilih Role</option>
-                                                <option value="admin" {{ old('peran') == 'Admin' ? 'selected' : '' }}>Admin</option>
-                                                <option value="pimpinan" {{ old('peran') == 'Pimpinan' ? 'selected' : '' }}>Pimpinan</option>
-                                                <option value="dosen" {{ old('peran') == 'Dosen' ? 'selected' : '' }}>Dosen</option>
-                                                <option value="staff" {{ old('peran') == 'Staff' ? 'selected' : '' }}>Staff</option>
-                                                <option value="mahasiswa" {{ old('peran') == 'Mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
+                                                <option value="admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                                <option value="pimpinan" {{ old('role') == 'Pimpinan' ? 'selected' : '' }}>Pimpinan</option>
+                                                <option value="dosen" {{ old('role') == 'Dosen' ? 'selected' : '' }}>Dosen</option>
+                                                <option value="staff" {{ old('role') == 'Staff' ? 'selected' : '' }}>Staff</option>
+                                                <option value="mahasiswa" {{ old('role') == 'Mahasiswa' ? 'selected' : '' }}>Mahasiswa</option>
                                             </select>
                                             @error('role')
                                                 <div class="alert alert-danger">{{ $message }}</div>

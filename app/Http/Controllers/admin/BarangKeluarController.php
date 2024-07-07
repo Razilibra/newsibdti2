@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Barang;
 use App\Models\BarangKeluar;
 use App\Models\Peminjaman;
 use App\Models\User;
@@ -15,8 +16,10 @@ class BarangKeluarController extends Controller
      */
     public function index()
     {
-        return view('admin.a_barang_keluar.index', [
-            'barangkeluar' => BarangKeluar::with('users', 'peminjamen')->latest()->get()
+        $title = "Barang Keluar";
+        $role = session('role');
+        return view('admin.a_barang_keluar.index', compact('role', 'title') + [
+            'barangkeluar' => BarangKeluar::with('users', 'peminjaman')->latest()->get()
         ]);
     }
 
@@ -25,7 +28,9 @@ class BarangKeluarController extends Controller
      */
     public function create()
     {
-        return view('admin.a_barang_keluar.create', [
+        $title = "Barang Keluar";
+        $role = session('role');
+        return view('admin.a_barang_keluar.create', compact('role', 'title') + [
             'user' => User::get(),
             'peminjaman' => Peminjaman::get(),
         ]);
@@ -36,30 +41,48 @@ class BarangKeluarController extends Controller
      */
     public function store(Request $request)
     {
+        $title = "Barang Keluar";
+        $role = session('role');
         $data = $request->validate([
-            'peminjamen_id' => 'required',
+            'peminjaman_id' => 'required|exists:peminjaman,id',
             'tanggal_keluar' => 'required|date',
         ]);
 
-        // Map 'peminjamen_id' to 'users_id' for the 'BarangKeluar' model
-        $data['users_id'] = $data['peminjamen_id'];
-        unset($data['peminjamen_id']);
+        // Cari entri peminjaman terkait
+        $peminjaman = Peminjaman::find($request->peminjaman_id);
+        if ($peminjaman) {
+            // Kurangi stok barang
+            $barang = Barang::find($peminjaman->id_barang);
+            if ($barang) {
+                // Pastikan stok cukup
+                if ($barang->stok >= $peminjaman->jumlah) {
+                    $barang->stok -= $peminjaman->jumlah; // Mengurangi stok barang sesuai jumlah peminjaman
+                    $barang->save();
 
-        $barangkeluar = BarangKeluar::create($data);
-        if ($barangkeluar) {
-            return to_route('barangkeluar.index')->with('success', 'Berhasil Menambah Data');
-        } else {
-            return to_route('barangkeluar.index')->with('failed', 'Gagal Menambah Data');
+                    // Map 'peminjamen_id' to 'users_id' for the 'BarangKeluar' model
+                    $data['users_id'] = $data['peminjaman_id'];
+                    unset($data['peminjaman_id']);
+
+                    $barangkeluar = BarangKeluar::create($data);
+                    return to_route('barangkeluar.index')->with(compact('role', 'title'))->with('success', 'Berhasil Menambah Data');
+                } else {
+                    return to_route('barangkeluar.create')->with(compact('role', 'title'))->with('failed', 'Stok barang tidak mencukupi');
+                }
+            }
         }
-    }
 
+        return to_route('barangkeluar.index')->with(compact('role', 'title'))->with('failed', 'Gagal Menambah Data');
+    }
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        //
+        $title = "Barang Keluar";
+        $role = session('role');
+        // Add any other necessary logic here
+        return view('admin.a_barang_keluar.show', compact('role', 'title'));
     }
 
     /**
@@ -67,7 +90,13 @@ class BarangKeluarController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $title = "Barang Keluar";
+        $role = session('role');
+        return view('admin.a_barang_keluar.edit', compact('role', 'title') + [
+            'barangkeluar' => BarangKeluar::find($id),
+            'user' => User::get(),
+            'peminjaman' => Peminjaman::get(),
+        ]);
     }
 
     /**
@@ -75,7 +104,23 @@ class BarangKeluarController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $title = "Barang Keluar";
+        $role = session('role');
+        $data = $request->validate([
+            'peminjaman_id' => 'required|exists:peminjaman,id',
+            'tanggal_keluar' => 'required|date',
+        ]);
+
+        $barangkeluar = BarangKeluar::findOrFail($id);
+        $data['users_id'] = $data['peminjaman_id'];
+        unset($data['peminjaman_id']);
+
+        $barangkeluar->update($data);
+        if ($barangkeluar) {
+            return to_route('barangkeluar.index')->with(compact('role', 'title'))->with('success', 'Berhasil Menyimpan Data');
+        } else {
+            return to_route('barangkeluar.index')->with(compact('role', 'title'))->with('failed', 'Gagal Menyimpan Data');
+        }
     }
 
     /**
@@ -83,11 +128,24 @@ class BarangKeluarController extends Controller
      */
     public function destroy(string $id)
     {
-        $barangkeluar = BarangKeluar::find($id)->delete();
+        $title = "Barang Keluar";
+        $role = session('role');
+        $barangkeluar = BarangKeluar::find($id);
         if ($barangkeluar) {
-            return to_route('barangkeluar.index')->with('success', 'Berhasil Menghapus Data');
+            $peminjaman = Peminjaman::find($barangkeluar->peminjaman_id);
+            if ($peminjaman) {
+                // Tambahkan kembali stok barang
+                $barang = Barang::find($peminjaman->id_barang);
+                if ($barang) {
+                    $barang->stok += $peminjaman->jumlah; // Menambahkan stok barang sesuai jumlah peminjaman
+                    $barang->save();
+                }
+            }
+
+            $barangkeluar->delete();
+            return to_route('barangkeluar.index')->with(compact('role', 'title'))->with('success', 'Berhasil Menghapus Data');
         } else {
-            return to_route('barangkeluar.index')->with('failed', 'Gagal Menghapus Data');
+            return to_route('barangkeluar.index')->with(compact('role', 'title'))->with('failed', 'Gagal Menghapus Data');
         }
     }
 }
